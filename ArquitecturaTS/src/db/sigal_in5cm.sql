@@ -1195,8 +1195,8 @@ call sp_agregarSolicitud(2, "PERMISO_LABORAL", "Solicito permiso para ausentarme
 call sp_agregarSolicitud(3, "EXTENSION_ENTREGA", "Solicito una extensión de 48 horas para la entrega del proyecto de Desarrollo Web.", "Mi jornada laboral del fin de semana me impidió completar el proyecto en el tiempo establecido.", 2, null);
 
 -- Auditoría
-call sp_registrarAuditoria("Usuario",     "LOGIN",  1, "Administrador inició sesión en el sistema.", "192.168.1.1");
-call sp_registrarAuditoria("Usuario",     "LOGIN",  2, "Estudiante Carlos Mendoza inició sesión.", "192.168.1.15");
+call sp_registrarAuditoria("Usuario", "LOGIN",  1, "Administrador inició sesión en el sistema.", "192.168.1.1");
+call sp_registrarAuditoria("Usuario", "LOGIN",  2, "Estudiante Carlos Mendoza inició sesión.", "192.168.1.15");
 call sp_registrarAuditoria("Oportunidad", "INSERT", 9, "Empleador Tech Solutions publicó nueva pasantía.", "10.0.0.5");
 call sp_registrarAuditoria("Postulacion", "INSERT", 2, "Carlos Mendoza se postuló a pasantía de software.", "10.0.0.12");
 call sp_registrarAuditoria("Calificacion","INSERT", 7, "Profesor Fuentes registró calificación del parcial.", "192.168.1.20");
