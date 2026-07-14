@@ -1,4 +1,4 @@
-// Interface para usuario completo (como viene de la BD)
+// Interface para usuario completo
 export interface IUsuario {
   id_usuario: number;
   nombre: string;
@@ -11,7 +11,7 @@ export interface IUsuario {
   foto: Date | null;
 }
 
-// Interface para crear usuario (sin id ni campos automáticos)
+// Interface para crear usuario
 export interface ICrearUsuarioDTO {
   nombre: string;
   email: string;
@@ -19,7 +19,7 @@ export interface ICrearUsuarioDTO {
   tipo_usuario: 'ESTUDIANTE' | 'PROFESOR' | 'EMPLEADOR' | 'ADMIN';
 }
 
-// Interface para actualizar (todos opcionales)
+// Interface para actualizar
 export interface IActualizarUsuarioDTO {
   nombre?: string;
   email?: string;
