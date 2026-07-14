@@ -1,43 +1,25 @@
-import { ValidationError } from './errorHandler';
+// Validar formato de email
+export const isValidEmail = (email: string): boolean => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
 
-// Clase con métodos estáticos para validar datos comunes
-export class Validators {
-  // Validar que el email tenga formato correcto
-  static validateEmail(email: string): void {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      throw new ValidationError('El formato del correo no es válido');
-    }
-  }
+// Validar longitud mínima
+export const minLength = (value: string, min: number): boolean => {
+  return value.length >= min;
+};
 
-  // Validar que un string no esté vacío
-  static validateNotEmpty(value: string, fieldName: string): void {
-    if (!value || value.trim() === '') {
-      throw new ValidationError(`${fieldName} es obligatorio y no puede estar vacío`);
-    }
-  }
+// Validar que no esté vacío
+export const isNotEmpty = (value: string): boolean => {
+  return value.trim().length > 0;
+};
 
-  // Validar que el teléfono tenga al menos 8 dígitos
-  static validatePhone(phone: string): void {
-    const phoneRegex = /^[0-9]{8,}$/;
-    if (!phoneRegex.test(phone.replace(/[-\s]/g, ''))) {
-      throw new ValidationError('El teléfono debe contener al menos 8 dígitos');
-    }
-  }
+// Validar número positivo
+export const isPositiveNumber = (value: number): boolean => {
+  return value > 0;
+};
 
-  // Validar que el ID sea un número positivo
-  static validateId(id: number): void {
-    if (!id || isNaN(id) || id <= 0) {
-      throw new ValidationError('El ID debe ser un número mayor a 0');
-    }
-  }
-
-  // Validar que un valor esté en una lista permitida
-  static validateEnum(value: string, allowedValues: string[], fieldName: string): void {
-    if (!allowedValues.includes(value)) {
-      throw new ValidationError(
-        `${fieldName} debe ser uno de: ${allowedValues.join(', ')}`
-      );
-    }
-  }
-}
+// Validar tipo de usuario
+export const isValidTipoUsuario = (tipo: string): boolean => {
+  return ['ESTUDIANTE', 'PROFESOR', 'EMPLEADOR', 'ADMIN'].includes(tipo);
+};
