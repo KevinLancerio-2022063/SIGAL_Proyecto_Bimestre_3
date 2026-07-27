@@ -1,79 +1,123 @@
-import { Router, Request, Response } from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
 import { UsuarioService } from '../services/usuarioService';
 
-// Creamos el enrutador y la instancia del servicio
-const router = Router();
 const usuarioService = new UsuarioService();
 
-// GET: Listar todos los usuarios
-router.get('/usuarios', async (req: Request, res: Response) => {
-  try {
-    const usuarios = await usuarioService.obtenerTodos();
-    res.status(200).json({ success: true, data: usuarios, total: usuarios.length });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error al obtener usuarios' });
-  }
-});
+// Función auxiliar para leer el cuerpo (body) de la petición en Node nativo
+const parseBody = (req: IncomingMessage): Promise<any> => {
+  return new Promise((resolve) => {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try { resolve(body ? JSON.parse(body) : {}); }
+      catch { resolve({}); }
+    });
+  });
+};
 
-// GET: Obtener un usuario por su ID
-router.get('/usuarios/:id', async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id as string);
-    const usuario = await usuarioService.obtenerPorId(id);
-    
-    if (!usuario) {
-      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+// Función que maneja las rutas de usuario, retorna true si la manejó, false si no
+export const usuarioRoutes = async (req: IncomingMessage, res: ServerResponse, url: string): Promise<boolean> => {
+  
+  // GET: Listar todos los usuarios
+  if (url === '/api/usuarios' && req.method === 'GET') {
+    try {
+      const usuarios = await usuarioService.obtenerTodos();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, data: usuarios, total: usuarios.length }));
+      return true;
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: 'Error al obtener usuarios' }));
+      return true;
     }
-    
-    res.status(200).json({ success: true, data: usuario });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error al obtener el usuario' });
   }
-});
 
-// POST: Crear un nuevo usuario
-router.post('/usuarios', async (req: Request, res: Response) => {
-  try {
-    const nuevoId = await usuarioService.crearUsuario(req.body);
-    res.status(201).json({ success: true, message: 'Usuario creado', data: { id: nuevoId } });
-  } catch (error) {
-    const mensaje = error instanceof Error ? error.message : 'Error al crear usuario';
-    res.status(400).json({ success: false, message: mensaje });
-  }
-});
-
-// PUT: Actualizar un usuario existente
-router.put('/usuarios/:id', async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id as string);
-    const actualizado = await usuarioService.actualizarUsuario(id, req.body);
-    
-    if (!actualizado) {
-      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+  // GET: Obtener usuario por ID
+  if (url.startsWith('/api/usuarios/') && req.method === 'GET') {
+    try {
+      const id = parseInt(url.split('/')[3]);
+      const usuario = await usuarioService.obtenerPorId(id);
+      
+      if (!usuario) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: 'Usuario no encontrado' }));
+        return true;
+      }
+      
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, data: usuario }));
+      return true;
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: 'Error al obtener el usuario' }));
+      return true;
     }
-    
-    res.status(200).json({ success: true, message: 'Usuario actualizado' });
-  } catch (error) {
-    const mensaje = error instanceof Error ? error.message : 'Error al actualizar';
-    res.status(400).json({ success: false, message: mensaje });
   }
-});
 
-// DELETE: Eliminar un usuario
-router.delete('/usuarios/:id', async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id as string);
-    const eliminado = await usuarioService.eliminarUsuario(id);
-    
-    if (!eliminado) {
-      return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+  // POST: Crear un nuevo usuario
+  if (url === '/api/usuarios' && req.method === 'POST') {
+    try {
+      const body = await parseBody(req);
+      const nuevoId = await usuarioService.crearUsuario(body);
+      
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, message: 'Usuario creado', data: { id: nuevoId } }));
+      return true;
+    } catch (error) {
+      const mensaje = error instanceof Error ? error.message : 'Error al crear usuario';
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: mensaje }));
+      return true;
     }
-    
-    res.status(200).json({ success: true, message: 'Usuario eliminado' });
-  } catch (error) {
-    const mensaje = error instanceof Error ? error.message : 'Error al eliminar';
-    res.status(400).json({ success: false, message: mensaje });
   }
-});
 
-export default router;
+  // PUT: Actualizar un usuario
+  if (url.startsWith('/api/usuarios/') && req.method === 'PUT') {
+    try {
+      const id = parseInt(url.split('/')[3]);
+      const body = await parseBody(req);
+      const actualizado = await usuarioService.actualizarUsuario(id, body);
+      
+      if (!actualizado) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: 'Usuario no encontrado' }));
+        return true;
+      }
+      
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, message: 'Usuario actualizado' }));
+      return true;
+    } catch (error) {
+      const mensaje = error instanceof Error ? error.message : 'Error al actualizar';
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: mensaje }));
+      return true;
+    }
+  }
+
+  // DELETE: Eliminar un usuario
+  if (url.startsWith('/api/usuarios/') && req.method === 'DELETE') {
+    try {
+      const id = parseInt(url.split('/')[3]);
+      const eliminado = await usuarioService.eliminarUsuario(id);
+      
+      if (!eliminado) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, message: 'Usuario no encontrado' }));
+        return true;
+      }
+      
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, message: 'Usuario eliminado' }));
+      return true;
+    } catch (error) {
+      const mensaje = error instanceof Error ? error.message : 'Error al eliminar';
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, message: mensaje }));
+      return true;
+    }
+  }
+
+  // Si la URL no coincide con ninguna de las anteriores, retornamos false
+  return false;
+};
