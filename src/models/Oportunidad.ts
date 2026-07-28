@@ -14,19 +14,20 @@ export interface IOportunidad {
   nombre_universidad?: string;
 }
 
-// Interface para crear una oportunidad
 export interface ICrearOportunidadDTO {
-  fk_id_empleador: number;
-  fk_id_universidad: number;
   titulo: string;
   descripcion: string;
-  tipo: string;
-  fecha_limite: string;
+  tipo: "BECA" | "PASANTIA" | "EMPLEO" | "PROGRAMA_INTERCAMBIO";
+  fk_id_empleador: number;
+  fk_id_universidad: number;
+  publicado_por: "EMPLEADOR" | "UNIVERSIDAD" | "ADMIN";
+  requisitos_principales: string; // ← Este es el nombre correcto según tu tabla
+  salario: number;
+  duracion: string;
+  fecha_vencimiento: string; // o Date
 }
 
-// Interface para actualizar una oportunidad
 export interface IActualizarOportunidadDTO {
   titulo?: string;
-  descripcion?: string;
-  estado?: string;
+  estado?: "ACTIVA" | "CERRADA" | "PAUSADA" | "VENCIDA";
 }
