@@ -17,17 +17,18 @@ export class UniversidadRepository {
     return rows.length > 0 ? rows[0] : null;
   }
 
-  // Crear una nueva universidad
   async crearUniversidad(datos: ICrearUniversidadDTO): Promise<number> {
-    const [result] = await pool.query(
-      'CALL sp_agregarUniversidad(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    await pool.query(
+      'CALL sp_agregarUniversidad(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @id)',
       [
         datos.nombre, datos.sigla, datos.ubicacion, datos.ciudad, datos.pais,
         datos.telefono, datos.email, datos.sitio_web, datos.rectora,
         datos.codigo_institucional, datos.imagen_logo, datos.acreditacion, datos.tipos_programa
       ]
-    ) as [ResultSetHeader, any];
-    return result.insertId;
+    );
+    
+    const [rows] = await pool.query('SELECT @id as id') as [any[], any];
+    return rows[0].id;
   }
 
   // Actualizar una universidad existente
