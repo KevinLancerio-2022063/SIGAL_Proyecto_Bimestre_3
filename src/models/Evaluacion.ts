@@ -11,12 +11,16 @@ export interface IEvaluacion {
   titulo_oportunidad?: string;
 }
 
-// Interface para crear una evaluación
 export interface ICrearEvaluacionDTO {
-  comentario: string;
-  calificacion: number;
-  fk_id_estudiante: number;
-  fk_id_oportunidad: number;
+  fk_id_curso: number;
+  fk_id_profesor: number;
+  tipo: "TAREA" | "PARTICIPACION" | "QUIZ" | "EXAMEN_PARCIAL" | "EXAMEN_FINAL" | "PROYECTO";
+  nombre: string;
+  descripcion: string;
+  puntaje_maximo: number;
+  porcentaje: number;
+  fecha_programada: string; // o Date
+  fecha_entrega: string; // o Date
 }
 
 // Interface para actualizar una evaluación
