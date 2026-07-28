@@ -15,12 +15,13 @@ export class UsuarioRepository {
   }
 
   async crearUsuario(datos: ICrearUsuarioDTO): Promise<number> {
-    const [result] = await pool.query(
-      'CALL sp_agregarUsuario(?, ?, ?, ?)',
+    await pool.query(
+      'CALL sp_agregarUsuario(?, ?, ?, ?, @id)',
       [datos.nombre, datos.email, datos.contrasena, datos.tipo_usuario]
-    ) as [ResultSetHeader, any];
+    );
     
-    return result.insertId;
+    const [rows] = await pool.query('SELECT @id as id') as [any[], any];
+    return rows[0].id;
   }
 
   async actualizarUsuario(id: number, datos: IActualizarUsuarioDTO): Promise<boolean> {
