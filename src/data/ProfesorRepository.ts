@@ -19,15 +19,13 @@ export class ProfesorRepository {
 
   // Crear un nuevo profesor
   async crearProfesor(datos: ICrearProfesorDTO): Promise<number> {
-    const [result] = await pool.query(
-      'CALL sp_agregarProfesor(?, ?, ?, ?, ?, ?, ?, ?)',
-      [
-        datos.fk_id_usuario, datos.fk_id_universidad, datos.numero_empleado,
-        datos.departamento, datos.especialidad, datos.oficina,
-        datos.telefono_oficina, datos.horas_tutoria
-      ]
-    ) as [ResultSetHeader, any];
-    return result.insertId;
+    await pool.query(
+      "CALL sp_agregarProfesor(?, ?, ?, ?, ?, ?, ?, ?, @id)",
+      [datos.fk_id_usuario, datos.fk_id_universidad, datos.numero_empleado, datos.departamento, datos.especialidad, datos.oficina, datos.telefono_oficina, datos.horas_tutoria]
+    );
+    
+    const [rows] = await pool.query("SELECT @id as id") as [any[], any];
+    return rows[0].id;
   }
 
   // Actualizar un profesor existente
