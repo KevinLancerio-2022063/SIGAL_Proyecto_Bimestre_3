@@ -19,15 +19,17 @@ export class EmpleadorRepository {
 
   // Crear un nuevo empleador
   async crearEmpleador(datos: ICrearEmpleadorDTO): Promise<number> {
-    const [result] = await pool.query(
-      'CALL sp_agregarEmpleador(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    await pool.query(
+      "CALL sp_agregarEmpleador(?, ?, ?, ?, ?, ?, ?, ?, ?, @id)",
       [
         datos.fk_id_usuario, datos.nombre_empresa, datos.nit, datos.sector,
         datos.ubicacion, datos.telefono_empresa, datos.sitio_web,
         datos.numero_empleados, datos.representante_legal
       ]
-    ) as [ResultSetHeader, any];
-    return result.insertId;
+    );
+    
+    const [rows] = await pool.query("SELECT @id as id") as [any[], any];
+    return rows[0].id;
   }
 
   // Actualizar un empleador existente
