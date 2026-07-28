@@ -19,11 +19,13 @@ export class EstudianteRepository {
 
   // Crear un nuevo estudiante
   async crearEstudiante(datos: ICrearEstudianteDTO): Promise<number> {
-    const [result] = await pool.query(
-      'CALL sp_agregarEstudiante(?, ?, ?, ?, ?, ?)',
+    await pool.query(
+      'CALL sp_agregarEstudiante(?, ?, ?, ?, ?, ?, @id)',
       [datos.fk_id_usuario, datos.fk_id_universidad, datos.matricula, datos.carrera, datos.semestre, datos.codigo_interno]
-    ) as [ResultSetHeader, any];
-    return result.insertId;
+    );
+    
+    const [rows] = await pool.query('SELECT @id as id') as [any[], any];
+    return rows[0].id;
   }
 
   // Actualizar un estudiante existente
