@@ -12,14 +12,15 @@ export interface IPostulacion {
   nombre_empresa?: string;
 }
 
-// Interface para crear una postulación
 export interface ICrearPostulacionDTO {
   fk_id_estudiante: number;
   fk_id_oportunidad: number;
-  carta_presentacion: string;
+  carta_motivacion: string;
+  curriculum_url: string;
+  porcentaje_compatibilidad: number;
 }
 
-// Interface para actualizar una postulación
 export interface IActualizarPostulacionDTO {
-  estado?: string;
+  estado?: "PENDIENTE" | "EN_REVISION" | "PRESELECCIONADO" | "ENTREVISTA" | "ACEPTADO" | "RECHAZADO" | "RETIRADO";
+  comentarios_revisor?: string;
 }

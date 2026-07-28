@@ -60,12 +60,16 @@ export const usuarioRoutes = async (req: IncomingMessage, res: ServerResponse, u
       const body = await parseBody(req);
       const nuevoId = await usuarioService.crearUsuario(body);
       
-      res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, message: 'Usuario creado', data: { id: nuevoId } }));
+      res.writeHead(201, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ 
+        success: true, 
+        message: "Usuario creado", 
+        data: { id: nuevoId }  // <-- Aquí debe ir el id
+      }));
       return true;
     } catch (error) {
-      const mensaje = error instanceof Error ? error.message : 'Error al crear usuario';
-      res.writeHead(400, { 'Content-Type': 'application/json' });
+      const mensaje = error instanceof Error ? error.message : "Error al crear usuario";
+      res.writeHead(400, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ success: false, message: mensaje }));
       return true;
     }
