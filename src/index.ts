@@ -1,29 +1,29 @@
+import { showMainMenu } from './menu/menuPrincipal';
 import { createServer } from './api/server';
 import { testConnection } from './data/database';
 
-// Función principal de arranque
-async function startServer(): Promise<void> {
-  try {
-    // Probamos la conexión a la base de datos
-    await testConnection();
-    
-    // Creamos el servidor HTTP nativo
+// Inicia el servidor HTTP
+const startServer = async () => {
     const servidor = createServer();
     const PORT = process.env.PORT || 3000;
-    
-    // Iniciamos la escucha en el puerto
     servidor.listen(PORT, () => {
-      console.log('====================================');
-      console.log(` Servidor nativo corriendo en puerto ${PORT}`);
-      console.log(` URL: http://localhost:${PORT}`);
-      console.log(` API: http://localhost:${PORT}/api`);
-      console.log('====================================');
+        console.log(`Servidor HTTP corriendo en http://localhost:${PORT}`);
+        console.log("Presiona Ctrl+C para detener.");
     });
-    
-  } catch (error) {
-    console.error('Error iniciando el servidor:', error);
-    process.exit(1);
-  }
-}
+};
 
-startServer();
+// Punto de entrada principal
+const main = async () => {
+    // 1. Conectar a BD primero
+    await testConnection();
+
+    // 2. Mostrar menú inicial
+    const mode = await showMainMenu();
+
+    // 3. Si el usuario eligió servidor HTTP
+    if (mode === 'SERVER') {
+        await startServer();
+    }
+};
+
+main();
