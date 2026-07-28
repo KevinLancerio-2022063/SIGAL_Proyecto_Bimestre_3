@@ -28,7 +28,7 @@ export interface ICrearHorarioLaboralDTO {
   salario: number;
 }
 
-// Interface para actualizar un horario laboral (según el stored procedure)
+// Interface para actualizar un horario laboral
 export interface IActualizarHorarioLaboralDTO {
   dia_semana?: "LUNES" | "MARTES" | "MIERCOLES" | "JUEVES" | "VIERNES" | "SABADO" | "DOMINGO";
   hora_inicio?: string;
